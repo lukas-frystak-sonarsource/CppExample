@@ -62,3 +62,9 @@ steps:
     displayName: Publish SonarQube quality gate result
     inputs:
       pollingTimeoutSec: '300'
+
+  - task: Bash@3
+    displayName: Run weather dashboard
+    inputs:
+      targetType: inline
+      script: ./cppexample London

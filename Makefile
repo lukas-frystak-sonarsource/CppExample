@@ -1,5 +1,6 @@
 CXX      = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra
+CXXFLAGS = -std=c++17 -Wall -Wextra -I include
+LDFLAGS  = -lssl -lcrypto
 TARGET   = cppexample
 SRCDIR   = src
 SRCS     = $(SRCDIR)/main.cpp
@@ -10,7 +11,7 @@ OBJS     = $(SRCS:.cpp=.o)
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 $(SRCDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
