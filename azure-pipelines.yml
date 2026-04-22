@@ -45,7 +45,7 @@ steps:
       cliProjectName: C++ Example
       cliSources: src
       extraProperties: |
-        sonar.cfamily.build-wrapper-output=build-wrapper-output
+        sonar.cfamily.compile-commands=build-wrapper-output/compile_commands.json
         sonar.exclusions=build/**,build-wrapper-output/**
 
   - task: Bash@3
