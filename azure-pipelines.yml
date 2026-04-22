@@ -21,7 +21,7 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  SONAR_HOST_URL: https://sonar.example.com
+  SONAR_URL: https://sq-aks-b2ekbthtdkhed9dy.a02.azurefd.net
 
 steps:
   - checkout: self
@@ -32,10 +32,10 @@ steps:
     inputs:
       targetType: inline
       script: |
-        curl -sSLo build-wrapper-linux-x86.zip $(SONAR_HOST_URL)/static/cpp/build-wrapper-linux-x86.zip
+        curl -sSLo build-wrapper-linux-x86.zip $(SONAR_URL)/static/cpp/build-wrapper-linux-x86.zip
         unzip -o build-wrapper-linux-x86.zip
 
-  - task: SonarQubePrepare@7
+  - task: SonarQubePrepare@8
     displayName: Prepare SonarQube analysis
     inputs:
       SonarQube: 'SonarQube'
@@ -55,10 +55,10 @@ steps:
       script: |
         ./build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir build-wrapper-output make all
 
-  - task: SonarQubeAnalyze@7
+  - task: SonarQubeAnalyze@8
     displayName: Run SonarQube analysis
 
-  - task: SonarQubePublish@7
+  - task: SonarQubePublish@8
     displayName: Publish SonarQube quality gate result
     inputs:
       pollingTimeoutSec: '300'
