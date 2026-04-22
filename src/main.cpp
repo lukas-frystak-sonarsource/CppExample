@@ -41,11 +41,10 @@ static std::string https_get(const std::string& host, const std::string& path) {
         throw std::runtime_error("SSL_connect failed");
     }
 
-    std::string req = "GET " + path + " HTTP/1.1\r\n"
+    std::string req = "GET " + path + " HTTP/1.0\r\n"
                       "Host: " + host + "\r\n"
                       "User-Agent: CppWeather/1.0\r\n"
-                      "Accept: application/json\r\n"
-                      "Connection: close\r\n\r\n";
+                      "Accept: application/json\r\n\r\n";
     SSL_write(ssl, req.c_str(), (int)req.size());
 
     std::string raw;
