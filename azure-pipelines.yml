@@ -1,0 +1,64 @@
+# Required Azure DevOps setup before running this pipeline:
+# 1. Create a SonarQube service connection in Project Settings > Service connections,
+#    name it exactly as referenced in the SonarQube tasks below.
+# 2. Add SONAR_TOKEN as a secret pipeline variable in Pipelines > Edit > Variables
+#    (enable "Keep this value secret"). Do NOT put its value in this file.
+# 3. SONAR_HOST_URL is defined as a plain pipeline variable below — adjust the value
+#    if your SonarQube instance URL changes.
+
+trigger:
+  branches:
+    include:
+      - main
+      - feature/*
+
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  SONAR_HOST_URL: https://sonar.example.com
+
+steps:
+  - checkout: self
+    fetchDepth: 0
+
+  - task: Bash@3
+    displayName: Download and unzip SonarQube build wrapper
+    inputs:
+      targetType: inline
+      script: |
+        curl -sSLo build-wrapper-linux-x86.zip $(SONAR_HOST_URL)/static/cpp/build-wrapper-linux-x86.zip
+        unzip -o build-wrapper-linux-x86.zip
+
+  - task: SonarQubePrepare@7
+    displayName: Prepare SonarQube analysis
+    inputs:
+      SonarQube: 'SonarQube'
+      scannerMode: cli
+      configMode: manual
+      cliProjectKey: cpp-example
+      cliProjectName: C++ Example
+      cliSources: src
+      extraProperties: |
+        sonar.cfamily.build-wrapper-output=build-wrapper-output
+        sonar.exclusions=build/**,build-wrapper-output/**
+
+  - task: Bash@3
+    displayName: Build with build wrapper
+    inputs:
+      targetType: inline
+      script: |
+        ./build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir build-wrapper-output make all
+
+  - task: SonarQubeAnalyze@7
+    displayName: Run SonarQube analysis
+
+  - task: SonarQubePublish@7
+    displayName: Publish SonarQube quality gate result
+    inputs:
+      pollingTimeoutSec: '300'
